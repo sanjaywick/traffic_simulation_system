@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Simulation</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        canvas { border: 1px solid black; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Traffic Simulation</h1>
+    <button onclick="fetchSimulation()">Run Simulation</button>
+    <pre id="output"></pre>
+    <canvas id="trafficCanvas" width="600" height="400"></canvas>
+
+    <script>
+        async function fetchSimulation() {
+            let response = await fetch('/simulate', { method: 'POST' });
+            let data = await response.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+            drawSimulation(data);
+        }
+
+        function drawSimulation(data) {
+            const canvas = document.getElementById("trafficCanvas");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw roads
+            ctx.fillStyle = "gray";
+            ctx.fillRect(100, 50, 400, 100);  // Horizontal road
+            ctx.fillRect(250, 0, 100, 400);   // Vertical road
+
+            // Draw vehicles
+            ctx.fillStyle = "blue";
+            data.vehicles.forEach(v => {
+                ctx.fillRect(v.x, v.y, 20, 10);
+            });
+
+            // Draw traffic lights
+            ctx.fillStyle = "red";
+            data.traffic_lights.forEach(tl => {
+                ctx.fillStyle = tl.state === "green" ? "green" : "red";
+                ctx.fillRect(tl.x, tl.y, 15, 15);
+            });
+        }
+    </script>
+</body>
+</html>
