@@ -1,24 +1,40 @@
 digraph {
-	Mumbai [color=green]
-	Pune [color=green]
-	Nashik [color=red]
-	Nagpur [color=green]
-	Hyderabad [color=green]
-	Bangalore [color=green]
-	Mumbai -> Pune [label=150]
-	Mumbai -> Nashik [label=180]
-	Mumbai -> Hyderabad [label=720]
-	Pune -> Mumbai [label=150]
-	Pune -> Nashik [label=200]
-	Pune -> Bangalore [label=840]
-	Nashik -> Pune [label=200]
-	Nashik -> Nagpur [label=600]
-	Nashik -> Mumbai [label=180]
-	Nagpur -> Nashik [label=600]
-	Nagpur -> Hyderabad [label=500]
-	Hyderabad -> Nagpur [label=500]
-	Hyderabad -> Bangalore [label=570]
-	Hyderabad -> Mumbai [label=720]
-	Bangalore -> Pune [label=840]
-	Bangalore -> Hyderabad [label=570]
+	Mumbai
+	Pune
+	Nashik
+	Nagpur
+	Hyderabad
+	Bangalore
+	Mumbai -> Pune [label="highway
+150km"]
+	Mumbai -> Nashik [label="highway
+180km"]
+	Mumbai -> Hyderabad [label="national_highway
+720km"]
+	Pune -> Mumbai [label="highway
+150km"]
+	Pune -> Nashik [label="state_highway
+200km"]
+	Pune -> Bangalore [label="national_highway
+840km"]
+	Nashik -> Pune [label="state_highway
+200km"]
+	Nashik -> Nagpur [label="national_highway
+600km"]
+	Nashik -> Mumbai [label="highway
+180km"]
+	Nagpur -> Nashik [label="national_highway
+600km"]
+	Nagpur -> Hyderabad [label="national_highway
+500km"]
+	Hyderabad -> Nagpur [label="national_highway
+500km"]
+	Hyderabad -> Bangalore [label="national_highway
+570km"]
+	Hyderabad -> Mumbai [label="national_highway
+720km"]
+	Bangalore -> Pune [label="national_highway
+840km"]
+	Bangalore -> Hyderabad [label="national_highway
+570km"]
 }
