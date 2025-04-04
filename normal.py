@@ -3,6 +3,7 @@ import simpy
 import graphviz
 import random
 import enum
+import matplotlib.pyplot as plt
 
 class VehicleType(enum.Enum):
     TRUCK = 1
@@ -34,13 +35,13 @@ class Vehicle:
             current_node = self.route[i]
             next_node = self.route[i + 1]
             
-            # Adjust travel time based on vehicle type and road details
             road_details = self.road_network[current_node][next_node]
-            base_travel_time = road_details['distance'] / road_details['max_speed']
-            travel_time = int(base_travel_time / self.speed_multiplier)  # Convert to seconds
+            congestion_factor = random.uniform(1.0, 2.5)
+            base_travel_time = road_details['distance'] / road_details['max_speed'] * congestion_factor
+            travel_time = int(base_travel_time / self.speed_multiplier)
             
             if self.traffic_lights[current_node].state == "RED":
-                delay = random.randint(10, 60)
+                delay = self.traffic_lights[current_node].dynamic_delay()
                 print(f"{self.vehicle_id} ({self.vehicle_type.name}) waiting at red light in {current_node} for {delay}s")
                 total_time += delay
                 yield self.env.timeout(delay)
@@ -62,23 +63,19 @@ class TrafficLight:
 
     def run(self):
         while True:
-            # Adjust traffic light timing based on junction type
             traffic_density = random.randint(1, 100)
             green_time = self.optimize_green_time(traffic_density)
+            print(f"Traffic light at {self.location} turning GREEN for {green_time}s due to congestion {traffic_density}")
             self.state = "GREEN"
             yield self.env.timeout(green_time)
             self.state = "RED"
             yield self.env.timeout(self.cycle_time - green_time)
 
     def optimize_green_time(self, traffic_density):
-        # Different junction types get different green time optimization
-        junction_multipliers = {
-            "highway_intersection": 0.7,
-            "city_intersection": 1.0,
-            "rural_intersection": 1.3
-        }
-        multiplier = junction_multipliers.get(self.junction_type, 1.0)
-        return int(max(10, min(traffic_density * multiplier // 2, 60)))
+        return max(10, min(60, traffic_density // 2))
+    
+    def dynamic_delay(self):
+        return random.randint(10, 60)
 
 class TrafficSimulation:
     def __init__(self):
@@ -91,46 +88,15 @@ class TrafficSimulation:
 
     def create_road_network(self):
         return {
-            "Mumbai": {
-                "Pune": {"distance": 150, "road_type": "highway", "max_speed": 100},
-                "Nashik": {"distance": 180, "road_type": "highway", "max_speed": 80},
-                "Hyderabad": {"distance": 720, "road_type": "national_highway", "max_speed": 120}
-            },
-            "Pune": {
-                "Mumbai": {"distance": 150, "road_type": "highway", "max_speed": 100},
-                "Nashik": {"distance": 200, "road_type": "state_highway", "max_speed": 60},
-                "Bangalore": {"distance": 840, "road_type": "national_highway", "max_speed": 100}
-            },
-            "Nashik": {
-                "Pune": {"distance": 200, "road_type": "state_highway", "max_speed": 60},
-                "Nagpur": {"distance": 600, "road_type": "national_highway", "max_speed": 80},
-                "Mumbai": {"distance": 180, "road_type": "highway", "max_speed": 80}
-            },
-            "Nagpur": {
-                "Nashik": {"distance": 600, "road_type": "national_highway", "max_speed": 80},
-                "Hyderabad": {"distance": 500, "road_type": "national_highway", "max_speed": 100}
-            },
-            "Hyderabad": {
-                "Nagpur": {"distance": 500, "road_type": "national_highway", "max_speed": 100},
-                "Bangalore": {"distance": 570, "road_type": "national_highway", "max_speed": 120},
-                "Mumbai": {"distance": 720, "road_type": "national_highway", "max_speed": 120}
-            },
-            "Bangalore": {
-                "Pune": {"distance": 840, "road_type": "national_highway", "max_speed": 100},
-                "Hyderabad": {"distance": 570, "road_type": "national_highway", "max_speed": 120}
-            }
+            "Mumbai": {"Pune": {"distance": 150, "max_speed": 100}},
+            "Pune": {"Mumbai": {"distance": 150, "max_speed": 100}},
+            "Mumbai": {"Nashik": {"distance": 180, "max_speed": 80}},
+            "Nashik": {"Pune": {"distance": 200, "max_speed": 90}}
         }
 
     def setup_traffic_lights(self):
-        junction_types = [
-            "highway_intersection", 
-            "city_intersection", 
-            "rural_intersection"
-        ]
         for location in self.road_network.keys():
-            # Randomly assign junction type
-            junction_type = random.choice(junction_types)
-            self.traffic_lights[location] = TrafficLight(self.env, location, junction_type)
+            self.traffic_lights[location] = TrafficLight(self.env, location, "city_intersection")
 
     def add_vehicle(self, vehicle_id, vehicle_type, start, destination):
         route = self.dijkstra_shortest_path(start, destination)
@@ -144,19 +110,10 @@ class TrafficSimulation:
     def run_simulation(self):
         while True:
             yield self.env.timeout(5)
+            self.sort_traffic_by_congestion()
 
     def run(self, simulation_time=2000):
         self.env.run(until=simulation_time)
-        self.visualize_traffic()
-
-    def visualize_traffic(self):
-        dot = graphviz.Digraph()
-        for node in self.road_network:
-            dot.node(node)
-        for node, neighbors in self.road_network.items():
-            for neighbor, details in neighbors.items():
-                dot.edge(node, neighbor, label=f"{details['road_type']}\n{details['distance']}km")
-        dot.render("traffic_network", format="png", view=True)
 
     def dijkstra_shortest_path(self, start, goal):
         shortest_paths = {start: (None, 0)}
@@ -169,7 +126,8 @@ class TrafficSimulation:
             weight_to_current_node = shortest_paths[current_node][1]
             
             for next_node, details in destinations.items():
-                weight = details['distance'] + weight_to_current_node
+                congestion_factor = random.uniform(1.0, 2.5)
+                weight = details['distance'] * congestion_factor + weight_to_current_node
                 if next_node not in shortest_paths:
                     shortest_paths[next_node] = (current_node, weight)
                 else:
@@ -190,10 +148,31 @@ class TrafficSimulation:
             current_node = next_node
         return path[::-1]
 
+    def sort_traffic_by_congestion(self):
+        congestion_data = [(loc, random.randint(1, 100)) for loc in self.traffic_lights.keys()]
+        sorted_congestion = self.merge_sort(congestion_data)
+        print("Sorted Congestion Levels:", sorted_congestion)
+
+    def merge_sort(self, data):
+        if len(data) <= 1:
+            return data
+        mid = len(data) // 2
+        left = self.merge_sort(data[:mid])
+        right = self.merge_sort(data[mid:])
+        return self.merge(left, right)
+
+    def merge(self, left, right):
+        result = []
+        while left and right:
+            if left[0][1] > right[0][1]:
+                result.append(left.pop(0))
+            else:
+                result.append(right.pop(0))
+        result.extend(left or right)
+        return result
+
 if __name__ == "__main__":
     sim = TrafficSimulation()
-    sim.add_vehicle("Truck1", VehicleType.TRUCK, "Mumbai", "Bangalore")
-    sim.add_vehicle("Car1", VehicleType.CAR, "Pune", "Bangalore")
-    sim.add_vehicle("Bus1", VehicleType.BUS, "Nashik", "Nagpur")
-    sim.add_vehicle("Motorcycle1", VehicleType.MOTORCYCLE, "Hyderabad", "Mumbai")
+    sim.add_vehicle("Truck1", VehicleType.TRUCK, "Mumbai", "Pune")
+    sim.add_vehicle("Car1", VehicleType.CAR, "Mumbai", "Nashik")
     sim.run(2000)
