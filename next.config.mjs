@@ -27,6 +27,7 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  // devIndicators: false, // Uncomment to remove indicator.
 }
 
 if (userConfig) {

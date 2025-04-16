@@ -76,7 +76,7 @@ export default function AlgorithmVisualizer() {
   }, [simulationState])
 
   if (!simulationState) {
-    return <div className="text-center py-8 text-gray-400">No simulation data available</div>
+    return <div></div>
   }
 
   return (
