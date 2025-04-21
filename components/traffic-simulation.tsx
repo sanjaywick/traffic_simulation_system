@@ -30,7 +30,7 @@ export default function TrafficSimulation() {
     <div className="space-y-6">
       {/* Map is always visible at the top */}
       <Card className="bg-gray-800 border-gray-700 shadow-xl overflow-hidden">
-        <div className="h-[500px] relative">
+        <div className="h-[600px] relative">
           <SimulationMap />
         </div>
       </Card>

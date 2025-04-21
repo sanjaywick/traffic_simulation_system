@@ -58,6 +58,7 @@ export default function SimulationMap() {
     })
 
     // Draw roads
+    const drawnRoads = new Set<string>();
     for (const [fromCity, destinations] of Object.entries(simulationState.roadNetwork)) {
       const fromPos = cityPositions[fromCity]
       if (!fromPos) continue
@@ -65,6 +66,12 @@ export default function SimulationMap() {
       for (const [toCity, roadDetails] of Object.entries(destinations)) {
         const toPos = cityPositions[toCity]
         if (!toPos) continue
+
+        const roadKey = [fromCity, toCity].sort().join("<->")
+        if (drawnRoads.has(roadKey)) {
+          continue
+        }
+        drawnRoads.add(roadKey)
 
         // Draw road
         ctx.lineWidth = 10
@@ -109,12 +116,16 @@ export default function SimulationMap() {
         ctx.fillStyle = "#ffffff"
         ctx.font = "12px Arial"
         ctx.textAlign = "center"
-        ctx.fillText(`${fromCity} → ${toCity}`, midX, midY)
+        ctx.fillText(`${fromCity} <-> ${toCity}`, midX, midY)
 
-        // Draw congestion percentage
-        ctx.font = "10px Arial"
-        ctx.fillStyle = congestionColor
-        ctx.fillText(`${Math.round(roadDetails.currentCongestion)}%`, midX, midY + 15)
+        // Draw congestion percentage with a semi-transparent black background
+        ctx.font = "10px Arial";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Semi-transparent black
+        const textWidth = ctx.measureText(`${Math.round(roadDetails.currentCongestion)}%`).width;
+        const textX = midX - textWidth / 2;
+        ctx.fillRect(textX - 2, midY + 3, textWidth + 4, 12); // Background rectangle
+        ctx.fillStyle = congestionColor;
+        ctx.fillText(`${Math.round(roadDetails.currentCongestion)}%`, midX, midY + 15);
       }
     }
 
@@ -168,10 +179,15 @@ export default function SimulationMap() {
       // Find congestion level for this city
       const light = simulationState.trafficLights.find((light) => light.location === city.name)
       if (light) {
-        // Congestion indicator
-        ctx.font = "12px Arial"
-        ctx.fillStyle = getCongestionColor(light.congestionLevel)
-        ctx.fillText(`${Math.round(light.congestionLevel)}%`, pos.x, pos.y + 50)
+        // Congestion indicator with background
+        ctx.font = "10px Arial";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Semi-transparent black
+        const congestionText = `${Math.round(light.congestionLevel)}%`;
+        const textWidth = ctx.measureText(congestionText).width;
+        const textX = pos.x - textWidth / 2;
+        ctx.fillRect(textX - 2, pos.y + 38, textWidth + 4, 12); // Background rectangle
+        ctx.fillStyle = getCongestionColor(light.congestionLevel);
+        ctx.fillText(congestionText, pos.x, pos.y + 50);
       }
     }
 

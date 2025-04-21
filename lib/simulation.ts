@@ -248,17 +248,21 @@ export class TrafficSimulation {
   private createCities(): CityInfo[] {
     // Spread cities more evenly across the canvas
     return [
-      { name: "Mumbai", x: 120, y: 350, population: 20000000 },
-      { name: "Pune", x: 320, y: 480, population: 7000000 },
-      { name: "Nashik", x: 220, y: 120, population: 2000000 },
-      { name: "Nagpur", x: 850, y: 180, population: 3000000 },
-      { name: "Aurangabad", x: 480, y: 220, population: 1500000 },
-      { name: "Kolhapur", x: 280, y: 650, population: 1000000 },
-      { name: "Solapur", x: 620, y: 520, population: 1200000 },
-      { name: "Satara", x: 380, y: 580, population: 800000 },
-      { name: "Ahmednagar", x: 420, y: 320, population: 600000 },
-      { name: "Jalgaon", x: 650, y: 80, population: 700000 },
-    ]
+  // Stage 1
+  { name: "Mumbai", x: 100, y: 55, population: 20000000 },
+  { name: "Nashik", x: 100, y: 225, population: 2000000 },
+  { name: "Jalgaon", x: 100, y: 450, population: 700000 },
+  
+  // Stage 2
+  { name: "Pune", x: 600, y: 55, population: 7000000 },
+  { name: "Ahmednagar", x: 600, y: 225, population: 600000 },
+  { name: "Aurangabad", x: 600, y: 450, population: 1500000 },
+  
+  // Stage 3
+  { name: "Nagpur", x: 1200, y: 55, population: 3000000 },
+  { name: "Solapur", x: 1200, y: 225, population: 1200000 },
+  { name: "Kolhapur", x: 1200, y: 450, population: 1000000 },
+     ];
   }
 
   private createRoadNetwork(): RoadNetwork {
@@ -272,15 +276,15 @@ export class TrafficSimulation {
     // Define bidirectional road connections
     this.addBidirectionalRoad(network, "Mumbai", "Pune", 150, 100)
     this.addBidirectionalRoad(network, "Mumbai", "Nashik", 180, 80)
-    this.addBidirectionalRoad(network, "Pune", "Satara", 120, 80)
+    this.addBidirectionalRoad(network, "Pune", "Nagpur", 120, 80)
     this.addBidirectionalRoad(network, "Pune", "Solapur", 250, 90)
     this.addBidirectionalRoad(network, "Pune", "Ahmednagar", 120, 70)
     this.addBidirectionalRoad(network, "Nashik", "Aurangabad", 160, 70)
     this.addBidirectionalRoad(network, "Nashik", "Jalgaon", 150, 60)
+    this.addBidirectionalRoad(network, "Nashik", "Ahmednagar", 150, 60)
     this.addBidirectionalRoad(network, "Aurangabad", "Jalgaon", 180, 60)
-    this.addBidirectionalRoad(network, "Aurangabad", "Nagpur", 450, 100)
+    this.addBidirectionalRoad(network, "Aurangabad", "Kolhapur", 450, 100)
     this.addBidirectionalRoad(network, "Solapur", "Kolhapur", 200, 70)
-    this.addBidirectionalRoad(network, "Satara", "Kolhapur", 120, 80)
     this.addBidirectionalRoad(network, "Ahmednagar", "Aurangabad", 130, 70)
     this.addBidirectionalRoad(network, "Ahmednagar", "Solapur", 180, 70)
     this.addBidirectionalRoad(network, "Solapur", "Nagpur", 500, 90)
