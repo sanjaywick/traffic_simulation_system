@@ -248,21 +248,21 @@ export class TrafficSimulation {
   private createCities(): CityInfo[] {
     // Spread cities more evenly across the canvas
     return [
-  // Stage 1
-  { name: "Mumbai", x: 100, y: 55, population: 20000000 },
-  { name: "Nashik", x: 100, y: 225, population: 2000000 },
-  { name: "Jalgaon", x: 100, y: 450, population: 700000 },
-  
-  // Stage 2
-  { name: "Pune", x: 600, y: 55, population: 7000000 },
-  { name: "Ahmednagar", x: 600, y: 225, population: 600000 },
-  { name: "Aurangabad", x: 600, y: 450, population: 1500000 },
-  
-  // Stage 3
-  { name: "Nagpur", x: 1200, y: 55, population: 3000000 },
-  { name: "Solapur", x: 1200, y: 225, population: 1200000 },
-  { name: "Kolhapur", x: 1200, y: 450, population: 1000000 },
-     ];
+      // Stage 1
+      { name: "Mumbai", x: 100, y: 55, population: 20000000 },
+      { name: "Nashik", x: 100, y: 225, population: 2000000 },
+      { name: "Jalgaon", x: 100, y: 450, population: 700000 },
+
+      // Stage 2
+      { name: "Pune", x: 600, y: 55, population: 7000000 },
+      { name: "Ahmednagar", x: 600, y: 225, population: 600000 },
+      { name: "Aurangabad", x: 600, y: 450, population: 1500000 },
+
+      // Stage 3
+      { name: "Nagpur", x: 1200, y: 55, population: 3000000 },
+      { name: "Solapur", x: 1200, y: 225, population: 1200000 },
+      { name: "Kolhapur", x: 1200, y: 450, population: 1000000 },
+    ]
   }
 
   private createRoadNetwork(): RoadNetwork {

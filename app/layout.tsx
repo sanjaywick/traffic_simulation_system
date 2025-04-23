@@ -1,10 +1,11 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type React from "react"
+import type { Metadata } from "next"
+import "./globals.css"
 
 export const metadata: Metadata = {
-  title: 'Traffic Simulation',
-  description: 'Simulate real time traffic ',
-  generator: 'Sanjay, Guhanathan',
+  title: "Traffic Simulation",
+  description: "Simulate real time traffic ",
+  generator: "Sanjay, Guhanathan",
 }
 
 export default function RootLayout({

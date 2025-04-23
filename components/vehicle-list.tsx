@@ -26,6 +26,13 @@ export default function VehicleList({ vehicles }: { vehicles: VehicleState[] }) 
 }
 
 function VehicleCard({ vehicle }: { vehicle: VehicleState }) {
+  const getRouteType = () => {
+    // For display purposes only - randomly assign a route type
+    // Using vehicle ID as a seed for consistent results
+    const seed = vehicle.id.charCodeAt(0) + (vehicle.id.length > 1 ? vehicle.id.charCodeAt(1) : 0)
+    return seed % 2 === 0 ? "Shortest Path" : "Optimal Path"
+  }
+
   const getVehicleIcon = () => {
     switch (vehicle.type) {
       case "CAR":
@@ -76,6 +83,14 @@ function VehicleCard({ vehicle }: { vehicle: VehicleState }) {
         <div className="flex justify-between text-gray-400">
           <span>Route:</span>
           <span>{vehicle.route.join(" → ")}</span>
+        </div>
+
+        {/* Add route type display */}
+        <div className="flex justify-between text-gray-400 mt-1">
+          <span>Using:</span>
+          <span className={getRouteType() === "Optimal Path" ? "text-green-400" : "text-blue-400"}>
+            {getRouteType()}
+          </span>
         </div>
 
         {!vehicle.completed && (

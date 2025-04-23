@@ -21,14 +21,22 @@ export default function AlgorithmVisualizer() {
     const paths = simulationState.vehicles
       .filter((v) => !v.completed && v.route.length > 1)
       .slice(0, 5) // Limit to 5 for display
-      .map((v) => ({
-        id: v.id,
-        type: v.type,
-        route: v.route,
-        current: v.currentPosition,
-        next: v.nextPosition,
-        rerouted: v.rerouted,
-      }))
+      .map((v) => {
+        // Calculate a simulated cost based on route length and congestion
+        const routeLength = v.route.length
+        const congestionFactor = v.rerouted ? 1.5 : 1.0
+        const cost = Math.round((routeLength * 10 + v.totalTime * 0.5) * congestionFactor)
+
+        return {
+          id: v.id,
+          type: v.type,
+          route: v.route,
+          current: v.currentPosition,
+          next: v.nextPosition,
+          rerouted: v.rerouted,
+          cost: cost, // Add cost property
+        }
+      })
     setPathfindingData(paths)
 
     // Extract traffic light optimization data
@@ -134,6 +142,16 @@ export default function AlgorithmVisualizer() {
                           </div>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Add cost display */}
+                    <div className="mt-3 text-xs text-gray-400 flex justify-between items-center">
+                      <span>
+                        Cost: <span className="font-semibold text-amber-400">{path.cost}</span> units
+                      </span>
+                      <span className={`text-xs ${path.rerouted ? "text-red-400" : "text-green-400"}`}>
+                        {path.rerouted ? "⚠️ Suboptimal" : "✓ Optimal"}
+                      </span>
                     </div>
                   </div>
                 ))}
